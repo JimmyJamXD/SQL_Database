@@ -1,0 +1,305 @@
+<?xml version="1.0" encoding="UTF-8"?><sqlb_project><db path="/Users/nancyngooo/Downloads/Ex_Files_SQL_EssT/Exercise Files/WSDA_Music.db" readonly="0" foreign_keys="1" case_sensitive_like="0" temp_store="0" wal_autocheckpoint="1000" synchronous="2"/><attached/><window><main_tabs open="structure browser pragmas query" current="0"/></window><tab_structure><column_width id="0" width="300"/><column_width id="1" width="0"/><column_width id="2" width="100"/><column_width id="3" width="3345"/><column_width id="4" width="0"/><expanded_item id="0" parent="1"/><expanded_item id="2" parent="0"/><expanded_item id="5" parent="0"/><expanded_item id="1" parent="1"/><expanded_item id="2" parent="1"/><expanded_item id="3" parent="1"/></tab_structure><tab_browse><current_table name="4,6:mainArtist"/><default_encoding codec=""/><browse_table_settings><table schema="main" name="Album" show_row_id="0" encoding="" plot_x_axis="" unlock_view_pk="_rowid_"><sort/><column_widths><column index="1" value="51"/><column index="2" value="193"/><column index="3" value="48"/></column_widths><filter_values/><conditional_formats/><row_id_formats/><display_formats/><hidden_columns/><plot_y_axes/><global_filter/></table><table schema="main" name="Artist" show_row_id="0" encoding="" plot_x_axis="" unlock_view_pk="_rowid_"><sort/><column_widths><column index="1" value="48"/><column index="2" value="129"/></column_widths><filter_values/><conditional_formats/><row_id_formats/><display_formats/><hidden_columns/><plot_y_axes/><global_filter/></table></browse_table_settings></tab_browse><tab_sql><sql name="SQL 1">--Separating text using ||,  how to get the length of strings using &quot;length&quot;
+--  and how to use substr to capture  a specific length of characters in a string for a data column
+/*
+SELECT 
+	FirstName,
+	LastName,
+	Address,
+	FirstName || &quot; &quot; || LastName ||&quot; &quot; || Address || &quot; ,&quot; || City || &quot; ,&quot; ||PostalCode AS [Mailing Address],
+	length(postalcode),
+	substr(postalcode, 1,5) AS [5 Digit Postal Code]
+FROM
+	Customer
+WHERE 
+	Country = &quot;USA&quot;
+	*/
+-- upper and lower function just converts chars to uppercase and lowercase lettering
+/*
+SELECT 
+	FirstName,
+	LastName,
+	Address,
+	FirstName || &quot; &quot; || LastName ||&quot; &quot; || Address || &quot; ,&quot; || City || &quot; ,&quot; ||PostalCode AS [Mailing Address],
+	length(postalcode),
+	substr(postalcode, 1,5) AS [5 Digit Postal Code],
+	upper(firstname) AS [First Name ALL caps],
+	lower(lastname) AS [Last Name All lower]
+FROM
+	Customer
+WHERE 
+	Country = &quot;USA&quot;
+*/
+
+-- Date/time Function to calculate age
+-- SELECT 
+-- 	LastName,
+-- 	FirstName,
+-- 	BirthDate,
+-- 	strftime(&quot;%Y-%m-%d&quot;,Birthdate) AS [BirthDate No Timecode],
+-- -- 	strftime(&quot;%Y-%m-%d&quot;, &quot;now&quot;) - strftime(&quot;%Y-%m-%d&quot;,Birthdate) AS [Age],
+-- 	strftime(%H-%M-%S, &quot;now&quot;) AS [TIME]
+-- FROM
+-- 	Employee
+	
+--Description: Aggregate Functions | What are our all time global sales ?
+/*SELECT
+	SUM(Total) AS [Total Sales],
+	AVG(Total) AS [Average Sales],
+	MAX(Total) AS [Maximum Sales],
+	MIN(Total) AS [Minimum Sales],
+	count(*) AS [Sales Count]
+	
+FROM
+	Invoice*/
+	
+-- Nesting Functions
+/*SELECT
+	SUM(Total) AS [Total Sales],
+	round( AVG(Total), 2) AS [Average Sales],
+	MAX(Total) AS [Maximum Sales],
+	MIN(Total) AS [Minimum Sales],
+	count(*) AS [Sales Count]
+	
+FROM
+	Invoice */
+	
+-- Grouping in SQL |What are the average invoices totals by City
+/*SELECT
+	BillingCity,
+	round(avg(total),2)
+FROM
+	Invoice
+GROUP BY  --Only group for nonaggregated data which is BillingCity or similar, not values or summation type
+	BillingCity
+ORDER BY
+	BillingCity */
+	
+-- Grouping in SQL |What are the average Invoice totals by city for only the cities that start with L ?
+--What are the average invoice total greater than $5
+--Having clause is integrating aggregate clause ie. avg(total) &gt; 5
+
+-- SELECT
+-- 	BillingCity AS &quot;CITY&quot;,
+-- 	round(avg(total),2) AS &quot;Average&quot;,
+-- 	BillingCountry AS &quot;Country&quot;
+-- FROM
+-- 	Invoice
+-- -- WHERE
+-- -- 	BillingCity LIKE &quot;L%&quot;
+-- GROUP BY 
+-- 	BillingCity
+-- HAVING
+-- avg(total) &gt;5
+-- ORDER BY
+-- 	BillingCity
+	</sql><sql name="SQL 3">--Grouping in SQL |
+--What are the average Invoice totals by billing country and city
+/*
+SELECT
+	BillingCountry,
+	BillingCity,
+	round(avg(total),2)
+FROM
+	Invoice
+GROUP BY 
+	BillingCity,
+	BillingCountry
+HAVING
+	avg(total) &gt;5
+ORDER BY
+	BillingCountry
+*/
+
+--Subqueries Ex. by inject another select clause in the where clause
+/*SELECT
+	InvoiceDate,
+	BillingAddress,
+	BillingCity,
+	total
+FROM
+	Invoice
+WHERE
+	total &lt; 
+	(SELECT avg(total) from invoice)
+ORDER BY
+	total DESC
+*/
+--Description: Subqueries | How is each individual city performing against the global average sales
+/*
+SELECT
+	BillingCity,
+	AVG(total) AS [City Average],
+	(select avg(total) from invoice) AS [Global Average] --Inserting this type of clause will be the global average of the database
+FROM
+	Invoice
+GROUP BY
+	BillingCity
+ORDER BY
+	BillingCity */
+
+
+--Subqueries for non-aggregate functions
+/*
+SELECT
+	InvoiceDate,
+	BillingAddress,
+	BillingCity
+FROM 
+	Invoice
+WHERE 
+	InvoiceDate &gt;
+(SELECT
+	InvoiceDate
+FROM 
+	Invoice
+WHERE
+	InvoiceId = 251) */
+
+
+--Subqueries with In clause
+/*SELECT
+	InvoiceDate,
+	BillingAddress,
+	BillingCity
+FROM 
+	Invoice
+WHERE 
+	InvoiceDate IN 
+(SELECT
+	InvoiceDate,
+	BillingAddress,
+	BillingCity
+FROM
+	Invoice
+WHERE
+	InvoiceId IN (251, 252, 254)) */
+
+
+--Subqueries and Distinct | Which tracks are not selling?
+-- SELECT	
+-- 	TrackId,
+-- 	Composer,
+-- 	Name
+-- FROM	
+-- 	Track
+-- WHERE
+-- 	TrackId 
+-- NOT IN 
+-- (SELECT 
+-- 	DISTINCT 
+-- 	TrackId
+-- FROM
+-- 	InvoiceLine
+-- ORDER By
+-- 	TrackId)
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	</sql><sql name="SQL 5">
+/*--Views
+
+-- Create VIEW V_AvgTotal AS 
+-- SELECT
+-- 	round(avg(total),2) AS [Average Total]
+-- FROM
+-- 	Invoice
+	
+--Views and JOIN
+-- Create VIEW V_Tracks_InvoiceLine AS 
+*/
+
+/*
+SELECT
+	l.InvoiceId,
+	l.UnitPrice,
+	l.Quantity,
+	t.Name,
+	t.Composer,
+	t.Milliseconds
+FROM 
+	Invoice as l
+INNER JOIN
+	Track as t
+ON l.TrackId = t.TrackId
+*/
+--Drop a view via syntax
+-- DROP VIEW	
+-- 	V_AvgTotal
+
+
+
+</sql><sql name="SQL 6">--DML | Inserting Data
+
+-- INSERT INTO
+-- 	Artist (Name)
+-- VALUES ('Bob Marley')
+
+
+--DML | Updating Data
+
+-- UPDATE
+-- Artist
+-- SET Name = 'Damien Marley'
+-- WHERE 
+-- 	ArtistId = 276
+
+--DML | Deleting Data
+
+-- DELETE FROM
+-- 	Artist
+-- WHERE
+-- 	ArtistId = 276
+
+
+-- SELECT 
+-- 	FirstName,
+-- 	LastName
+-- FROM 
+-- 	Customer
+-- WHERE 
+-- 	LastName LIKE &quot;G%&quot;
+	
+
+-- SELECT
+-- 	Name,
+-- 	Composer
+-- FROM
+-- 	Track
+-- WHERE
+-- 	TrackId NOT IN 
+-- 		(SELECT
+-- 		DISTINCT
+-- 		Composer)
+-- 	
+-- ORDER BY
+-- 	Name DESC
+
+-- SELECT
+-- 	BillingAddress,
+-- 	BillingCity,
+-- 	BillingCountry
+-- FROM
+-- 	Invoice
+-- WHERE
+-- 	BillingCity = &quot;Brussels&quot;
+
+--INSERT
+
+INSERT INTO
+	Artist (&quot;NAME&quot;)
+VALUES
+	(&quot;Peter Tosh&quot;)
+	</sql><current_tab id="0"/></tab_sql></sqlb_project>
